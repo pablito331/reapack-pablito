@@ -1,0 +1,94 @@
+# ============================================================
+#  REAPER
+# ============================================================
+
+# Arquivos de projeto REAPER (binários, não versionar)
+*.RPP-bak
+*.RPP.bak
+
+# Arquivos de peak (gerados automaticamente pelo REAPER)
+*.reapeaks
+
+# Pasta de renders/exports (não versionar arquivos de áudio)
+Renders/
+Exports/
+Bounce/
+
+# ============================================================
+#  Áudio / Mídia
+# ============================================================
+*.wav
+*.mp3
+*.aiff
+*.aif
+*.flac
+*.ogg
+*.m4a
+*.mp4
+*.avi
+*.mov
+
+# ============================================================
+#  Python
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.Python
+env/
+venv/
+.venv/
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ============================================================
+#  Editores e IDEs
+# ============================================================
+
+# VS Code / Kiro
+.vscode/
+*.code-workspace
+
+# JetBrains
+.idea/
+*.iml
+
+# Vim / Neovim
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ============================================================
+#  Temporários e logs
+# ============================================================
+*.log
+*.tmp
+*.temp
+tmp/
+temp/
+
+# ============================================================
+#  Segredos (nunca versionar)
+# ============================================================
+.env
+.env.*
+secrets.json
+credentials.json

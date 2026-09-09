@@ -1,0 +1,48 @@
+name: ReaPack Index
+
+# Roda em todo push para master/main que altere scripts ou efeitos.
+# Gera o index.xml automaticamente via reapack-index e faz commit de volta.
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - "Scripts/**"
+      - "Effects/**"
+      - "index.xml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # necessário para o commit automático
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # histórico completo (reapack-index usa git log)
+
+      - name: Instalar reapack-index
+        run: |
+          # reapack-index é uma gem Ruby
+          gem install reapack-index
+
+      - name: Gerar index.xml
+        run: |
+          reapack-index \
+            --output index.xml \
+            --url-template "https://github.com/${{ github.repository }}/raw/${{ github.ref_name }}/@path" \
+            --no-commit \
+            .
+
+      - name: Commit index.xml se houver mudanças
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.xml
+          # Só commita se houver mudança real
+          git diff --cached --quiet || git commit -m "chore: atualizar index.xml [skip ci]"
+          git push

@@ -1,0 +1,215 @@
+desc:Peak Meter
+author:MeuNome
+version:1.0
+tags:meter analysis utility
+about:
+  Medidor de nível com picos com hold, clip indicator e medição RMS.
+  Exibe L e R separadamente com escala de dB.
+  Completamente transparente: não modifica o áudio.
+
+slider1:3000<100,10000,100>Peak Hold (ms)
+slider2:-60<-120,-6,6>Floor (dB)
+slider3:0<0,1,1{Peak,RMS+Peak}>Modo
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+peak_l = 0; peak_r = 0;         // pico atual
+hold_l = 0; hold_r = 0;         // pico retido (hold)
+hold_timer_l = 0;
+hold_timer_r = 0;
+clip_l = 0; clip_r = 0;         // indicadores de clip
+
+rms_l = 0; rms_r = 0;           // RMS acumulado
+rms_count = 0;
+rms_win = 0;                    // tamanho da janela RMS
+
+function db2lin(db) ( 10 ^ (db / 20) );
+function lin2db(x)  ( x > 0 ? 20 * log(x) / log(10) : -144 );
+
+@slider
+hold_samples = srate * (slider1 / 1000.0);
+floor_lin    = db2lin(slider2);
+
+// Janela RMS: 300ms
+rms_win = floor(srate * 0.3);
+rms_win = max(1, rms_win);
+
+@block
+// Decaimento dos picos (5ms de release por bloco)
+decay = exp(-1.0 / (srate * 0.005)) ^ samplesblock;
+peak_l *= decay;
+peak_r *= decay;
+
+// Decrementar timers de hold
+hold_timer_l > 0 ? hold_timer_l -= samplesblock;
+hold_timer_r > 0 ? hold_timer_r -= samplesblock;
+
+@sample
+
+// Capturar nível absoluto
+lv_l = abs(spl0);
+lv_r = abs(spl1);
+
+// Atualizar pico
+lv_l > peak_l ? peak_l = lv_l;
+lv_r > peak_r ? peak_r = lv_r;
+
+// Peak hold
+lv_l >= hold_l ? (
+  hold_l       = lv_l;
+  hold_timer_l = hold_samples;
+) : hold_timer_l <= 0 ? (
+  hold_l *= 0.9998;  // release suave após hold expirar
+);
+
+lv_r >= hold_r ? (
+  hold_r       = lv_r;
+  hold_timer_r = hold_samples;
+) : hold_timer_r <= 0 ? (
+  hold_r *= 0.9998;
+);
+
+// Clip detector (>= 0 dBFS)
+lv_l >= 1.0 ? clip_l = 1;
+lv_r >= 1.0 ? clip_r = 1;
+
+// RMS
+slider3 == 1 ? (
+  rms_l = rms_l * (1 - 1/rms_win) + spl0*spl0 * (1/rms_win);
+  rms_r = rms_r * (1 - 1/rms_win) + spl1*spl1 * (1/rms_win);
+);
+
+// Pass-through: não modifica o áudio
+// spl0 e spl1 ficam intactos
+
+@gfx 160 320
+
+DB_TOP    = 6;       // dB máximo exibido
+DB_BOTTOM = slider2; // dB mínimo exibido
+DB_RANGE  = DB_TOP - DB_BOTTOM;
+
+W = gfx_w;
+H = gfx_h;
+BAR_W   = 36;
+BAR_H   = H - 60;
+BAR_Y   = 30;
+LEFT_X  = 20;
+RIGHT_X = W - BAR_W - 20;
+
+// Fundo
+gfx_r=0.1; gfx_g=0.1; gfx_b=0.12;
+gfx_rect(0, 0, W, H);
+
+// Título
+gfx_setfont(1,"Arial",11,0x62);
+gfx_r=0.5; gfx_g=0.5; gfx_b=0.5;
+gfx_x=W/2-22; gfx_y=8;
+gfx_drawstr("PEAK");
+
+// --- Função que desenha uma barra ---
+// Chamada 2 vezes (L e R)
+function draw_bar(bx, peak, hold, clip, rms, label) local(
+  fill_h, peak_y, hold_y, rms_y, peak_db, hold_db, rms_db, t
+) (
+  // Fundo da barra
+  gfx_r=0.06; gfx_g=0.06; gfx_b=0.08;
+  gfx_rect(bx, BAR_Y, BAR_W, BAR_H);
+
+  // Desenhar barra de nível com gradiente de cor
+  peak_db   = lin2db(peak);
+  fill_h    = max(0, (peak_db - DB_BOTTOM) / DB_RANGE * BAR_H);
+
+  i = 0;
+  loop(fill_h,
+    t = (BAR_H - i) / BAR_H;  // 0=baixo, 1=alto
+    t > 0.85 ? (
+      gfx_r=1.0; gfx_g=0.2; gfx_b=0.2;  // vermelho > -3dB
+    ) : t > 0.65 ? (
+      gfx_r=1.0; gfx_g=0.8; gfx_b=0.0;  // amarelo > -9dB
+    ) : (
+      gfx_r=0.2; gfx_g=0.9; gfx_b=0.3;  // verde
+    );
+    y_pos = BAR_Y + BAR_H - i - 1;
+    gfx_rect(bx, y_pos, BAR_W, 1);
+    i += 1;
+  );
+
+  // Linha de hold
+  hold_db = lin2db(hold);
+  hold_y  = BAR_Y + BAR_H - max(0, (hold_db - DB_BOTTOM) / DB_RANGE * BAR_H);
+  hold_y  = min(BAR_Y + BAR_H, max(BAR_Y, hold_y));
+  gfx_r=1.0; gfx_g=1.0; gfx_b=1.0;
+  gfx_line(bx, hold_y, bx + BAR_W - 1, hold_y);
+
+  // Linha RMS (slider3==1)
+  slider3 == 1 ? (
+    rms_db = lin2db(sqrt(rms));
+    rms_y  = BAR_Y + BAR_H - max(0, (rms_db - DB_BOTTOM) / DB_RANGE * BAR_H);
+    rms_y  = min(BAR_Y + BAR_H, max(BAR_Y, rms_y));
+    gfx_r=0.4; gfx_g=0.8; gfx_b=1.0;
+    gfx_line(bx, rms_y, bx + BAR_W - 1, rms_y);
+  );
+
+  // Borda da barra
+  gfx_r=0.3; gfx_g=0.3; gfx_b=0.3;
+  gfx_rect(bx, BAR_Y, BAR_W, BAR_H, 0);
+
+  // Clip indicator
+  clip ? (
+    gfx_r=1.0; gfx_g=0.1; gfx_b=0.1;
+  ) : (
+    gfx_r=0.15; gfx_g=0.06; gfx_b=0.06;
+  );
+  gfx_rect(bx, BAR_Y - 16, BAR_W, 12);
+  gfx_setfont(1,"Arial",9,0x62);
+  gfx_r=1; gfx_g=1; gfx_b=1;
+  gfx_x=bx+6; gfx_y=BAR_Y-14;
+  gfx_drawstr("CLIP");
+
+  // Label do canal
+  gfx_setfont(1,"Arial",11,0x62);
+  gfx_r=0.6; gfx_g=0.6; gfx_b=0.6;
+  gfx_x=bx+12; gfx_y=BAR_Y+BAR_H+6;
+  gfx_drawstr(label);
+
+  // Valor de pico em dB
+  gfx_setfont(1,"Arial",10);
+  peak_db >= -0.1 ? (gfx_r=1.0; gfx_g=0.3; gfx_b=0.3;) :
+  peak_db >= -6   ? (gfx_r=1.0; gfx_g=0.9; gfx_b=0.2;) :
+                    (gfx_r=0.5; gfx_g=0.9; gfx_b=0.5;);
+  gfx_x=bx; gfx_y=BAR_Y+BAR_H+22;
+  gfx_printf("%+.1f", peak_db);
+);
+
+draw_bar(LEFT_X,  peak_l, hold_l, clip_l, rms_l, "L");
+draw_bar(RIGHT_X, peak_r, hold_r, clip_r, rms_r, "R");
+
+// Linhas de referência de dB
+gfx_setfont(1,"Arial",9);
+db_marks = newlocal(6);
+db_marks[0]= 0; db_marks[1]=-3; db_marks[2]=-6;
+db_marks[3]=-12; db_marks[4]=-24; db_marks[5]=-48;
+
+i=0;
+loop(6,
+  mark_db = db_marks[i];
+  mark_db >= DB_BOTTOM ? (
+    mark_y = BAR_Y + BAR_H - (mark_db - DB_BOTTOM) / DB_RANGE * BAR_H;
+    gfx_r=0.25; gfx_g=0.25; gfx_b=0.25;
+    gfx_line(LEFT_X + BAR_W + 2, mark_y, RIGHT_X - 2, mark_y);
+    gfx_r=0.4; gfx_g=0.4; gfx_b=0.4;
+    gfx_x=LEFT_X+BAR_W+4; gfx_y=mark_y-5;
+    gfx_printf("%d", mark_db);
+  );
+  i+=1;
+);
+
+// Reset clip ao clicar
+mouse_cap & 1 ? (
+  clip_l = 0;
+  clip_r = 0;
+);

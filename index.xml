@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ReaPack Repository Index
+  ========================
+  Este arquivo é lido pelo ReaPack (gerenciador de pacotes do REAPER).
+  Para instalar este repositório no REAPER:
+    Extensions > ReaPack > Import a repository
+    Cole a URL: https://github.com/SEU_USUARIO/reaper-pack/raw/master/index.xml
+
+  MANUTENÇÃO:
+  - Quando adicionar novos scripts, copie um bloco <reapack> existente como modelo.
+  - Sempre incremente o atributo "version" em <version> ao modificar um arquivo.
+  - O atributo "name" em <index> é o nome exibido no ReaPack.
+
+  AUTOMAÇÃO:
+  - Se usar o GitHub Actions com reapack-index, este arquivo é gerado automaticamente
+    a partir dos cabeçalhos @description, @version, etc. nos scripts.
+  - Veja: .github/workflows/reapack-index.yml
+-->
+<index version="1" name="reaper-pack">
+
+  <metadata>
+    <description><![CDATA[
+Repositório pessoal de scripts e plugins para o REAPER.
+Inclui ReaScripts em Lua e Python, e plugins JSFX em EEL2.
+
+Categorias:
+- Scripts/Lua/Track    : Automação de tracks
+- Scripts/Lua/Items    : Manipulação de media items
+- Scripts/Lua/MIDI     : Edição e geração MIDI
+- Scripts/Lua/Projeto  : Utilitários de projeto
+- Scripts/Lua/UI       : Interfaces gráficas
+- Scripts/Python       : Scripts com integração externa
+- Effects/JSFX/Audio   : Plugins de processamento de áudio
+- Effects/JSFX/MIDI    : Plugins de processamento MIDI
+- Effects/JSFX/Util    : Analisadores e utilitários
+    ]]></description>
+  </metadata>
+
+  <!-- ============================================================ -->
+  <!--  SCRIPTS LUA – Track                                         -->
+  <!-- ============================================================ -->
+
+  <category name="Scripts/Lua/Track">
+
+    <reapack name="track_rename_selected.lua" type="script" desc="Renomear tracks selecionadas em sequência">
+      <metadata>
+        <description><![CDATA[Pede um nome base e numera automaticamente todas as tracks selecionadas. Ex: "Bateria" gera "Bateria 01", "Bateria 02"...]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="track_rename_selected.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/Track/track_rename_selected.lua</source>
+      </version>
+    </reapack>
+
+    <reapack name="track_color_by_name.lua" type="script" desc="Colorir tracks automaticamente por palavras-chave no nome">
+      <metadata>
+        <description><![CDATA[Percorre todas as tracks e aplica cores baseadas em palavras-chave no nome (kick, bass, vocal, etc). Edite o COLOR_MAP no script para personalizar.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="track_color_by_name.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/Track/track_color_by_name.lua</source>
+      </version>
+    </reapack>
+
+  </category>
+
+  <!-- ============================================================ -->
+  <!--  SCRIPTS LUA – Items                                         -->
+  <!-- ============================================================ -->
+
+  <category name="Scripts/Lua/Items">
+
+    <reapack name="items_split_at_cursor.lua" type="script" desc="Dividir items selecionados na posição do cursor">
+      <metadata>
+        <description><![CDATA[Divide todos os media items selecionados na posição atual do cursor de edição. Opera apenas nos items selecionados, ao contrário do atalho nativo.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="items_split_at_cursor.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/Items/items_split_at_cursor.lua</source>
+      </version>
+    </reapack>
+
+    <reapack name="items_nudge_position.lua" type="script" desc="Mover items selecionados por um offset em milissegundos">
+      <metadata>
+        <description><![CDATA[Desloca todos os items selecionados para frente ou para trás por um valor em milissegundos. Útil para correção de timing fino.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="items_nudge_position.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/Items/items_nudge_position.lua</source>
+      </version>
+    </reapack>
+
+  </category>
+
+  <!-- ============================================================ -->
+  <!--  SCRIPTS LUA – MIDI                                          -->
+  <!-- ============================================================ -->
+
+  <category name="Scripts/Lua/MIDI">
+
+    <reapack name="midi_humanize.lua" type="script" desc="Humanizar velocidade e timing de notas MIDI">
+      <metadata>
+        <description><![CDATA[Aplica variação aleatória controlada na velocidade e posição temporal das notas MIDI do take ativo. Simula a imprecisão humana para deixar sequências programadas mais naturais.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="midi_humanize.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/MIDI/midi_humanize.lua</source>
+      </version>
+    </reapack>
+
+    <reapack name="midi_chord_generator.lua" type="script" desc="Gerador de acordes MIDI a partir de notas selecionadas">
+      <metadata>
+        <description><![CDATA[Para cada nota selecionada no editor MIDI, adiciona as notas do acorde escolhido acima dela. Suporta Maior, Menor, 7, Sus2, Sus4, Dim, Aug e outros.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="midi_chord_generator.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/MIDI/midi_chord_generator.lua</source>
+      </version>
+    </reapack>
+
+  </category>
+
+  <!-- ============================================================ -->
+  <!--  SCRIPTS LUA – Projeto                                       -->
+  <!-- ============================================================ -->
+
+  <category name="Scripts/Lua/Projeto">
+
+    <reapack name="project_export_track_list.lua" type="script" desc="Exportar lista de tracks do projeto para arquivo de texto">
+      <metadata>
+        <description><![CDATA[Gera um arquivo .txt com informações de todas as tracks: nome, volume, pan, mute, solo e número de items. Útil para documentação de sessões.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="project_export_track_list.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/Projeto/project_export_track_list.lua</source>
+      </version>
+    </reapack>
+
+  </category>
+
+  <!-- ============================================================ -->
+  <!--  SCRIPTS LUA – UI                                            -->
+  <!-- ============================================================ -->
+
+  <category name="Scripts/Lua/UI">
+
+    <reapack name="ui_track_inspector.lua" type="script" desc="Inspector de track com janela gráfica interativa">
+      <metadata>
+        <description><![CDATA[Abre uma janela flutuante que exibe em tempo real: nome, volume, pan, mute, solo e número de items da track selecionada. Demonstra o uso do gfx nativo do REAPER.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="ui_track_inspector.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/UI/ui_track_inspector.lua</source>
+      </version>
+    </reapack>
+
+  </category>
+
+  <!-- ============================================================ -->
+  <!--  SCRIPTS PYTHON                                              -->
+  <!-- ============================================================ -->
+
+  <category name="Scripts/Python">
+
+    <reapack name="project_info.py" type="script" desc="Exibir informações completas do projeto no console">
+      <metadata>
+        <description><![CDATA[Exibe no console: nome, caminho, BPM, compasso e uma tabela com todas as tracks (volume, pan, mute, items). Bom ponto de partida para Python no REAPER.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="project_info.py">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Python/project_info.py</source>
+      </version>
+    </reapack>
+
+    <reapack name="batch_rename_from_csv.py" type="script" desc="Renomear tracks em lote a partir de um arquivo CSV">
+      <metadata>
+        <description><![CDATA[Lê um CSV com colunas (índice, nome) e renomeia as tracks correspondentes. Demonstra integração com arquivos externos via biblioteca csv do Python.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="batch_rename_from_csv.py">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Python/batch_rename_from_csv.py</source>
+      </version>
+    </reapack>
+
+  </category>
+
+  <!-- ============================================================ -->
+  <!--  JSFX – Audio                                                -->
+  <!-- ============================================================ -->
+
+  <category name="Effects/JSFX/Audio">
+
+    <reapack name="gain_stereo.jsfx" type="effect" desc="Gain Stereo">
+      <metadata>
+        <description><![CDATA[Ganho estéreo com controle separado por canal L/R, ganho master, inversão de fase independente e modo mono summing.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="gain_stereo.jsfx">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Effects/JSFX/Audio/gain_stereo.jsfx</source>
+      </version>
+    </reapack>
+
+    <reapack name="compressor_simple.jsfx" type="effect" desc="Compressor Simple">
+      <metadata>
+        <description><![CDATA[Compressor estéreo com threshold, ratio, attack, release e makeup gain. Detecção Peak ou RMS, modo Mid/Side e medidor de Gain Reduction em tempo real.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="compressor_simple.jsfx">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Effects/JSFX/Audio/compressor_simple.jsfx</source>
+      </version>
+    </reapack>
+
+  </category>
+
+  <!-- ============================================================ -->
+  <!--  JSFX – MIDI                                                 -->
+  <!-- ============================================================ -->
+
+  <category name="Effects/JSFX/MIDI">
+
+    <reapack name="midi_transpose.jsfx" type="effect" desc="MIDI Transpose">
+      <metadata>
+        <description><![CDATA[Transpõe notas MIDI em tempo real por semitons e/ou oitavas. Filtro por canal MIDI. Exibe o offset atual na interface gráfica.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="midi_transpose.jsfx">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Effects/JSFX/MIDI/midi_transpose.jsfx</source>
+      </version>
+    </reapack>
+
+    <reapack name="midi_velocity_map.jsfx" type="effect" desc="MIDI Velocity Map">
+      <metadata>
+        <description><![CDATA[Remapeia a velocidade das notas MIDI. Modos: Linear (escala+offset), Compressor (suaviza dinâmica) e Fixed. Exibe histograma de velocidades em tempo real.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="midi_velocity_map.jsfx">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Effects/JSFX/MIDI/midi_velocity_map.jsfx</source>
+      </version>
+    </reapack>
+
+  </category>
+
+  <!-- ============================================================ -->
+  <!--  JSFX – Util                                                 -->
+  <!-- ============================================================ -->
+
+  <category name="Effects/JSFX/Util">
+
+    <reapack name="peak_meter.jsfx" type="effect" desc="Peak Meter">
+      <metadata>
+        <description><![CDATA[Medidor de nível L/R com peak hold configurável, clip indicator (reset ao clicar), medição RMS e escala de dB personalizável. Completamente transparente — não modifica o áudio.]]></description>
+      </metadata>
+      <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
+        <changelog><![CDATA[Versão inicial]]></changelog>
+        <source file="peak_meter.jsfx">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Effects/JSFX/Util/peak_meter.jsfx</source>
+      </version>
+    </reapack>
+
+  </category>
+
+</index>

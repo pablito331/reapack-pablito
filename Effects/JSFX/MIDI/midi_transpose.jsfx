@@ -1,0 +1,83 @@
+desc:MIDI Transpose
+author:MeuNome
+version:1.0
+tags:midi transpose pitch
+about:
+  Transpõe todas as notas MIDI em tempo real por um número de semitons
+  e/ou oitavas. Também permite filtrar por canal MIDI.
+  Útil para remapear instrumentos ou testar harmonias sem editar os items.
+
+slider1:0<-24,24,1>Semitons
+slider2:0<-4,4,1>Oitavas
+slider3:0<0,16,1{Todos,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}>Canal (0=Todos)
+slider4:0<0,1,1{Não,Sim}>Pass-through outros eventos
+
+in_pin:MIDI input
+out_pin:MIDI output
+
+@init
+NOTE_ON  = 0x90;
+NOTE_OFF = 0x80;
+POLY_AT  = 0xA0;
+
+@slider
+// Calcular offset total em semitons
+total_offset = slider1 + (slider2 * 12);
+
+// Canal filtrado (0 = todos os canais)
+filter_ch = slider3;
+
+@block
+
+while (midirecv(offset, msg1, msg2, msg3)) (
+
+  status  = msg1 & 0xF0;  // tipo da mensagem
+  channel = msg1 & 0x0F;  // canal 0-15
+
+  // Verificar se é evento de nota (Note On, Note Off, Polyphonic AT)
+  is_note = (status == NOTE_ON) || (status == NOTE_OFF) || (status == POLY_AT);
+
+  // Verificar filtro de canal (filter_ch=0 = todos, senão canal específico)
+  ch_match = (filter_ch == 0) || (channel == filter_ch - 1);
+
+  is_note && ch_match ? (
+    // Transpor pitch (msg2) e garantir range válido 0-127
+    new_pitch = msg2 + total_offset;
+    new_pitch = max(0, min(127, new_pitch));
+
+    midisend(offset, msg1, new_pitch, msg3);
+  ) : (
+    // Reenviar evento sem modificação
+    midisend(offset, msg1, msg2, msg3);
+  );
+);
+
+@gfx 200 100
+
+gfx_r=0.12; gfx_g=0.12; gfx_b=0.15;
+gfx_rect(0, 0, gfx_w, gfx_h);
+
+gfx_setfont(1,"Arial",13,0x62);
+gfx_r=0.4; gfx_g=0.7; gfx_b=1.0;
+gfx_x=10; gfx_y=10;
+gfx_drawstr("MIDI Transpose");
+
+gfx_setfont(1,"Arial",22,0x62);
+total_offset > 0 ? (
+  gfx_r=0.4; gfx_g=1.0; gfx_b=0.5;
+) : total_offset < 0 ? (
+  gfx_r=1.0; gfx_g=0.5; gfx_b=0.4;
+) : (
+  gfx_r=0.7; gfx_g=0.7; gfx_b=0.7;
+);
+gfx_x=10; gfx_y=38;
+gfx_printf("%+d st", total_offset);
+
+gfx_setfont(1,"Arial",11);
+gfx_r=0.5; gfx_g=0.5; gfx_b=0.5;
+gfx_x=10; gfx_y=76;
+filter_ch == 0 ? (
+  gfx_drawstr("Canal: Todos");
+) : (
+  gfx_printf("Canal: %d", filter_ch);
+);

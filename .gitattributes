@@ -1,0 +1,24 @@
+# Normalizar line endings: LF no repositório, conversão automática no checkout
+* text=auto
+
+# Scripts e código — sempre LF
+*.lua    text eol=lf
+*.eel    text eol=lf
+*.jsfx   text eol=lf
+*.py     text eol=lf
+*.md     text eol=lf
+*.xml    text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.json   text eol=lf
+*.csv    text eol=lf
+*.txt    text eol=lf
+
+# Binários — sem conversão
+*.wav    binary
+*.mp3    binary
+*.aiff   binary
+*.flac   binary
+*.png    binary
+*.jpg    binary
+*.gif    binary

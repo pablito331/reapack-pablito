@@ -1,0 +1,126 @@
+desc:MIDI Velocity Map
+author:MeuNome
+version:1.0
+tags:midi velocity dynamics
+about:
+  Remapeia a velocidade das notas MIDI com curva ajustável.
+  Modos: Linear (com escala e offset), Compressor (suaviza dinâmica)
+  e Fixed (força todas as notas para a mesma velocidade).
+  Exibe histograma de velocidades em tempo real.
+
+slider1:0<0,2,1{Linear,Compressor,Fixed}>Modo
+slider2:100<0,200,1>Escala (%) [Linear]
+slider3:0<-64,64,1>Offset [Linear]
+slider4:64<0,127,1>Threshold [Compressor]
+slider5:2<1,8,0.1>Ratio [Compressor]
+slider6:100<1,127,1>Velocidade Fixa [Fixed]
+slider7:0<0,1,1{Não,Sim}>Exibir histograma
+
+in_pin:MIDI input
+out_pin:MIDI output
+
+@init
+NOTE_ON = 0x90;
+
+// Buffer para histograma de velocidades (128 posições)
+// Usar endereços de memória 0..127
+i = 0;
+loop(128, i[] = 0; i += 1;);
+hist_max = 1;  // evitar divisão por zero
+
+function map_velocity(vel) local(new_vel) (
+  slider1 == 0 ? (
+    // Linear: escala + offset
+    new_vel = vel * (slider2 / 100.0) + slider3;
+  ) : slider1 == 1 ? (
+    // Compressor: acima do threshold, aplica ratio
+    vel > slider4 ? (
+      over   = vel - slider4;
+      new_vel = slider4 + over / slider5;
+    ) : (
+      new_vel = vel;
+    );
+  ) : (
+    // Fixed: força a velocidade definida
+    new_vel = slider6;
+  );
+
+  // Garantir range 1-127 (0 = note off em alguns contextos)
+  max(1, min(127, floor(new_vel + 0.5)));
+);
+
+@block
+
+while (midirecv(offset, msg1, msg2, msg3)) (
+  status = msg1 & 0xF0;
+
+  status == NOTE_ON && msg3 > 0 ? (
+    new_vel = map_velocity(msg3);
+
+    // Atualizar histograma
+    slider7 == 1 ? (
+      new_vel[] += 1;
+      new_vel[] > hist_max ? hist_max = new_vel[];
+    );
+
+    midisend(offset, msg1, msg2, new_vel);
+  ) : (
+    midisend(offset, msg1, msg2, msg3);
+  );
+);
+
+@gfx 280 180
+
+gfx_r=0.10; gfx_g=0.10; gfx_b=0.13;
+gfx_rect(0, 0, gfx_w, gfx_h);
+
+// Título
+gfx_setfont(1,"Arial",13,0x62);
+gfx_r=0.4; gfx_g=0.7; gfx_b=1.0;
+gfx_x=10; gfx_y=8;
+gfx_drawstr("MIDI Velocity Map");
+
+// Modo atual
+gfx_setfont(1,"Arial",11);
+gfx_r=0.6; gfx_g=0.6; gfx_b=0.6;
+gfx_x=10; gfx_y=28;
+slider1 == 0 ? gfx_drawstr("Modo: Linear") :
+slider1 == 1 ? gfx_drawstr("Modo: Compressor") :
+               gfx_drawstr("Modo: Fixed");
+
+slider7 == 1 ? (
+  // Histograma
+  gfx_r=0.4; gfx_g=0.4; gfx_b=0.4;
+  gfx_x=10; gfx_y=48;
+  gfx_drawstr("Histograma de velocidades:");
+
+  hist_y = 160;
+  hist_h = 90;
+  bar_w  = max(1, (gfx_w - 20) / 128);
+
+  i = 0;
+  loop(128,
+    val = i[];
+    bar_h_fill = val > 0 ? max(1, (val / hist_max) * hist_h) : 0;
+
+    // Cor: gradiente azul -> verde -> vermelho por velocidade
+    t = i / 127.0;
+    gfx_r = t;
+    gfx_g = 1.0 - abs(t - 0.5) * 2;
+    gfx_b = 1.0 - t;
+
+    bx = 10 + i * bar_w;
+    gfx_rect(bx, hist_y - bar_h_fill, bar_w, bar_h_fill);
+    i += 1;
+  );
+
+  // Eixo X
+  gfx_r=0.3; gfx_g=0.3; gfx_b=0.3;
+  gfx_line(10, hist_y, gfx_w - 10, hist_y);
+
+  gfx_setfont(1,"Arial",9);
+  gfx_r=0.4; gfx_g=0.4; gfx_b=0.4;
+  gfx_x=10;       gfx_y=hist_y+3; gfx_drawstr("1");
+  gfx_x=gfx_w/2;  gfx_drawstr("64");
+  gfx_x=gfx_w-22; gfx_drawstr("127");
+);

@@ -1,0 +1,167 @@
+desc:Compressor Simple
+author:MeuNome
+version:1.0
+tags:dynamics compressor
+about:
+  Compressor estéreo com detecção RMS, controles de threshold,
+  ratio, attack, release e makeup gain. Inclui medidor de GR (gain reduction).
+  Bom ponto de partida para entender processamento dinâmico em JSFX.
+
+slider1:-12<-60,0,0.5>Threshold (dB)
+slider2:4<1,20,0.1>Ratio (:1)
+slider3:10<0.1,200,0.1>Attack (ms)
+slider4:100<1,2000,1>Release (ms)
+slider5:0<-12,24,0.1>Makeup Gain (dB)
+slider6:0<0,1,1{Peak,RMS}>Detecção
+slider7:0<0,1,1{Stereo,Mid/Side}>Modo
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+
+// Estado do envelope
+env     = 0;      // envelope de detecção atual
+gr_db   = 0;      // gain reduction em dB (para medidor)
+
+// RMS buffer (janela de 50ms)
+rms_buf_size = 0;
+rms_sum = 0;
+rms_pos = 0;
+
+function db2lin(db)  ( 10 ^ (db / 20) );
+function lin2db(lin) ( lin > 0 ? 20 * log(lin) / log(10) : -144 );
+
+@slider
+
+// Converter parâmetros
+thresh_lin = db2lin(slider1);
+ratio      = slider2;
+makeup     = db2lin(slider5);
+
+// Constantes de attack/release (coeficientes de 1 polo)
+// tau = -1 / (srate * tempo_em_seg)
+attack_coef  = exp(-1.0 / (srate * slider3 / 1000.0));
+release_coef = exp(-1.0 / (srate * slider4 / 1000.0));
+
+// Tamanho do buffer RMS (50ms)
+rms_buf_size = floor(srate * 0.05);
+rms_buf_size = max(1, rms_buf_size);
+
+@block
+// Resetar buffer RMS se o tamanho mudou
+// (simplificação: só inicializa na primeira chamada)
+rms_pos >= rms_buf_size ? rms_pos = 0;
+
+@sample
+
+// ------ Codificar para Mid/Side se necessário ------
+slider7 == 1 ? (
+  mid  = (spl0 + spl1) * 0.5;
+  side = (spl0 - spl1) * 0.5;
+  spl0 = mid;
+  spl1 = side;
+);
+
+// ------ Detecção de nível ------
+slider6 == 0 ? (
+  // Peak: máximo absoluto dos dois canais
+  level = max(abs(spl0), abs(spl1));
+) : (
+  // RMS: média quadrática em buffer circular
+  sq = (spl0*spl0 + spl1*spl1) * 0.5;
+  rms_sum -= rms_pos[];          // remove amostra antiga
+  rms_pos[] = sq;                // guarda nova amostra
+  rms_sum += sq;                 // adiciona ao acumulador
+  rms_pos += 1;
+  rms_pos >= rms_buf_size ? rms_pos = 0;
+  level = sqrt(max(0, rms_sum / rms_buf_size));
+);
+
+// ------ Envelope follower ------
+level > env ? (
+  env = attack_coef  * env + (1 - attack_coef)  * level;
+) : (
+  env = release_coef * env + (1 - release_coef) * level;
+);
+
+// ------ Calcular gain reduction ------
+env > thresh_lin ? (
+  // Nível acima do threshold: aplicar compressão
+  // GR = (level_db - threshold) * (1 - 1/ratio)
+  env_db = lin2db(env);
+  gr_db  = (env_db - slider1) * (1.0 - 1.0 / ratio);
+  gr_lin = db2lin(-gr_db);
+) : (
+  gr_db  = 0;
+  gr_lin = 1.0;
+);
+
+// ------ Aplicar gain + makeup ------
+spl0 *= gr_lin * makeup;
+spl1 *= gr_lin * makeup;
+
+// ------ Decodificar Mid/Side ------
+slider7 == 1 ? (
+  left  = spl0 + spl1;
+  right = spl0 - spl1;
+  spl0  = left;
+  spl1  = right;
+);
+
+@gfx 280 160
+
+// Fundo
+gfx_r=0.12; gfx_g=0.12; gfx_b=0.15;
+gfx_rect(0, 0, gfx_w, gfx_h);
+
+// Título
+gfx_r=0.4; gfx_g=0.7; gfx_b=1.0;
+gfx_setfont(1,"Arial",13,0x62); // 'b' = bold
+gfx_x=10; gfx_y=10;
+gfx_drawstr("Compressor Simple");
+
+// Label GR
+gfx_r=0.7; gfx_g=0.7; gfx_b=0.7;
+gfx_setfont(1,"Arial",12);
+gfx_x=10; gfx_y=40;
+gfx_drawstr("Gain Reduction");
+
+// Valor GR
+gfx_r=1.0; gfx_g=0.4; gfx_b=0.4;
+gfx_setfont(1,"Arial",18,0x62);
+gfx_x=10; gfx_y=58;
+gfx_printf("%.1f dB", -gr_db);
+
+// Barra de GR (máx representado = 30 dB)
+bar_max = 30;
+bar_w   = gfx_w - 20;
+bar_h   = 20;
+bar_y   = 95;
+
+// Fundo da barra
+gfx_r=0.1; gfx_g=0.1; gfx_b=0.1;
+gfx_rect(10, bar_y, bar_w, bar_h);
+
+// Preenchimento — de verde (pouco GR) para vermelho (muito GR)
+fill_w = min(bar_w, (gr_db / bar_max) * bar_w);
+fill_w > 0 ? (
+  t = fill_w / bar_w;  // 0=pouco, 1=muito
+  gfx_r = 0.2 + t * 0.8;
+  gfx_g = 0.8 - t * 0.6;
+  gfx_b = 0.2;
+  gfx_rect(10, bar_y, fill_w, bar_h);
+);
+
+// Borda
+gfx_r=0.35; gfx_g=0.35; gfx_b=0.35;
+gfx_rect(10, bar_y, bar_w, bar_h, 0);
+
+// Labels dB na barra
+gfx_setfont(1,"Arial",10);
+gfx_r=0.5; gfx_g=0.5; gfx_b=0.5;
+gfx_x=10;  gfx_y=bar_y+bar_h+4; gfx_drawstr("0");
+gfx_x=10 + bar_w/2 - 8; gfx_drawstr("-15 dB");
+gfx_x=10 + bar_w - 24;  gfx_drawstr("-30");

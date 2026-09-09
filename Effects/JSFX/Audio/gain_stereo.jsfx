@@ -1,0 +1,47 @@
+desc:Gain Stereo
+author:MeuNome
+version:1.0
+tags:gain utility
+about:
+  Plugin simples de ganho estéreo com controle separado por canal.
+  Suporta inversão de fase e mono summing.
+
+slider1:0<-24,24,0.1>Gain L (dB)
+slider2:0<-24,24,0.1>Gain R (dB)
+slider3:0<-24,24,0.1>Gain Master (dB)
+slider4:0<0,1,1{Normal,Invertida}>Fase L
+slider5:0<0,1,1{Normal,Invertida}>Fase R
+slider6:0<0,1,1{Stereo,Mono (L+R)}>Modo
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+gain_l = 1.0;
+gain_r = 1.0;
+gain_m = 1.0;
+
+// Converte dB para linear
+function db2lin(db) ( 10 ^ (db / 20) );
+
+@slider
+gain_l = db2lin(slider1) * db2lin(slider3);
+gain_r = db2lin(slider2) * db2lin(slider3);
+
+// Inversão de fase
+slider4 == 1 ? gain_l *= -1;
+slider5 == 1 ? gain_r *= -1;
+
+@sample
+// Aplicar ganho
+spl0 *= gain_l;
+spl1 *= gain_r;
+
+// Modo mono: soma L+R e divide por 2 (evita clipping)
+slider6 == 1 ? (
+  mid = (spl0 + spl1) * 0.5;
+  spl0 = mid;
+  spl1 = mid;
+);
