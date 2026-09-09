@@ -5,7 +5,7 @@
   Este arquivo é lido pelo ReaPack (gerenciador de pacotes do REAPER).
   Para instalar este repositório no REAPER:
     Extensions > ReaPack > Import a repository
-    Cole a URL: https://github.com/SEU_USUARIO/reaper-pack/raw/master/index.xml
+    Cole a URL: https://github.com/pablito331/reapack-pablito/raw/master/index.xml
 
   MANUTENÇÃO:
   - Quando adicionar novos scripts, copie um bloco <reapack> existente como modelo.
@@ -17,7 +17,7 @@
     a partir dos cabeçalhos @description, @version, etc. nos scripts.
   - Veja: .github/workflows/reapack-index.yml
 -->
-<index version="1" name="reaper-pack">
+<index version="1" name="reapack-pablito">
 
   <metadata>
     <description><![CDATA[
@@ -49,7 +49,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="track_rename_selected.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/Track/track_rename_selected.lua</source>
+        <source file="track_rename_selected.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/Track/track_rename_selected.lua</source>
       </version>
     </reapack>
 
@@ -59,7 +59,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="track_color_by_name.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/Track/track_color_by_name.lua</source>
+        <source file="track_color_by_name.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/Track/track_color_by_name.lua</source>
       </version>
     </reapack>
 
@@ -77,7 +77,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="items_split_at_cursor.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/Items/items_split_at_cursor.lua</source>
+        <source file="items_split_at_cursor.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/Items/items_split_at_cursor.lua</source>
       </version>
     </reapack>
 
@@ -87,7 +87,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="items_nudge_position.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/Items/items_nudge_position.lua</source>
+        <source file="items_nudge_position.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/Items/items_nudge_position.lua</source>
       </version>
     </reapack>
 
@@ -105,7 +105,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="midi_humanize.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/MIDI/midi_humanize.lua</source>
+        <source file="midi_humanize.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/MIDI/midi_humanize.lua</source>
       </version>
     </reapack>
 
@@ -115,7 +115,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="midi_chord_generator.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/MIDI/midi_chord_generator.lua</source>
+        <source file="midi_chord_generator.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/MIDI/midi_chord_generator.lua</source>
       </version>
     </reapack>
 
@@ -133,7 +133,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="project_export_track_list.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/Projeto/project_export_track_list.lua</source>
+        <source file="project_export_track_list.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/Projeto/project_export_track_list.lua</source>
       </version>
     </reapack>
 
@@ -151,7 +151,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="ui_track_inspector.lua">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Lua/UI/ui_track_inspector.lua</source>
+        <source file="ui_track_inspector.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/UI/ui_track_inspector.lua</source>
       </version>
     </reapack>
 
@@ -169,7 +169,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="project_info.py">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Python/project_info.py</source>
+        <source file="project_info.py">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Python/project_info.py</source>
       </version>
     </reapack>
 
@@ -179,7 +179,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="batch_rename_from_csv.py">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Scripts/Python/batch_rename_from_csv.py</source>
+        <source file="batch_rename_from_csv.py">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Python/batch_rename_from_csv.py</source>
       </version>
     </reapack>
 
@@ -197,7 +197,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="gain_stereo.jsfx">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Effects/JSFX/Audio/gain_stereo.jsfx</source>
+        <source file="gain_stereo.jsfx">https://github.com/pablito331/reapack-pablito/raw/master/Effects/JSFX/Audio/gain_stereo.jsfx</source>
       </version>
     </reapack>
 
@@ -207,7 +207,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="compressor_simple.jsfx">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Effects/JSFX/Audio/compressor_simple.jsfx</source>
+        <source file="compressor_simple.jsfx">https://github.com/pablito331/reapack-pablito/raw/master/Effects/JSFX/Audio/compressor_simple.jsfx</source>
       </version>
     </reapack>
 
@@ -225,7 +225,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="midi_transpose.jsfx">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Effects/JSFX/MIDI/midi_transpose.jsfx</source>
+        <source file="midi_transpose.jsfx">https://github.com/pablito331/reapack-pablito/raw/master/Effects/JSFX/MIDI/midi_transpose.jsfx</source>
       </version>
     </reapack>
 
@@ -235,7 +235,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="midi_velocity_map.jsfx">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Effects/JSFX/MIDI/midi_velocity_map.jsfx</source>
+        <source file="midi_velocity_map.jsfx">https://github.com/pablito331/reapack-pablito/raw/master/Effects/JSFX/MIDI/midi_velocity_map.jsfx</source>
       </version>
     </reapack>
 
@@ -253,7 +253,7 @@ Categorias:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="peak_meter.jsfx">https://github.com/SEU_USUARIO/reaper-pack/raw/master/Effects/JSFX/Util/peak_meter.jsfx</source>
+        <source file="peak_meter.jsfx">https://github.com/pablito331/reapack-pablito/raw/master/Effects/JSFX/Util/peak_meter.jsfx</source>
       </version>
     </reapack>
 
