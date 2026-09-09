@@ -119,3 +119,12 @@ MIT — use, modifique e distribua à vontade.
 Esta coleção inclui plugins de referência para estudo. Veja `Examples/README.md` para uma descrição detalhada dos plugins Tukan e outros criadores.
 
 ---
+- Examples/             # Plugins de referência (não envia para GitHub)
+└── .github/workflows/  # CI: geração automática do index.xml
+```
+
+---
+
+## Plugins de Referência
+
+Esta coleção inclui plugins de referência para estudo. Veja `Examples/README.md` para uma descrição detalhada dos plugins Tukan (Drum Samplers, Sintetizadores, Filtros, Effects) e outros criadores.
