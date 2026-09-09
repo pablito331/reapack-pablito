@@ -70,7 +70,7 @@ O REAPER suporta três linguagens para ReaScripts e uma para plugins JSFX. Cada 
 1. No REAPER: **Extensions → ReaPack → Import a repository**
 2. Cole a URL do índice:
    ```
-   https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/index.xml
+   https://github.com/pablito331/reapack-pablito/raw/master/index.xml
    ```
 3. **Extensions → ReaPack → Synchronize Packages**
 

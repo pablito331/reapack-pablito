@@ -24,7 +24,7 @@ local ltn12 = require('ltn12')
 local SCRIPT_VERSION = '1.0'
 local AUTHOR = 'pablito331'
 local KITS_DIR = os.getenv('USERPROFILE') .. '\\Documents\\Reaper\\Kits\\'
-local KITS_JSON_URL = 'https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Examples/drumkit_template/kits.json'
+local KITS_JSON_URL = 'https://raw.githubusercontent.com/pablito331/reapack-pablito/master/Examples/drumkit_template/kits.json'
 
 -- Mapeamento MIDI padrão
 local MIDI_MAP = {

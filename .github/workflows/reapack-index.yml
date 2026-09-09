@@ -34,7 +34,7 @@ jobs:
         run: |
           reapack-index \
             --output index.xml \
-            --url-template "https://cdn.jsdelivr.net/gh/${{ github.repository }}@${{ github.ref_name }}/@path" \
+            --url-template "https://github.com/${{ github.repository }}/raw/${{ github.ref_name }}/@path" \
             --no-commit \
             .
 

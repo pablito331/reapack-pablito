@@ -39,7 +39,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="pablito331" time="2026-09-08T00:00:00Z">
         <changelog><![CDATA[Versão inicial com UI, leitura de kits, sequenciador e export MIDI]]></changelog>
-        <source file="pablito_luadrummer.lua">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Scripts/Lua/pablito_luadrummer.lua</source>
+        <source file="pablito_luadrummer.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/pablito_luadrummer.lua</source>
       </version>
     </reapack>
   </category>
@@ -55,7 +55,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="track_rename_selected.lua">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Scripts/Lua/Track/track_rename_selected.lua</source>
+        <source file="track_rename_selected.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/Track/track_rename_selected.lua</source>
       </version>
     </reapack>
 
@@ -65,7 +65,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="track_color_by_name.lua">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Scripts/Lua/Track/track_color_by_name.lua</source>
+        <source file="track_color_by_name.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/Track/track_color_by_name.lua</source>
       </version>
     </reapack>
   </category>
@@ -81,7 +81,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="items_split_at_cursor.lua">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Scripts/Lua/Items/items_split_at_cursor.lua</source>
+        <source file="items_split_at_cursor.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/Items/items_split_at_cursor.lua</source>
       </version>
     </reapack>
 
@@ -91,7 +91,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="items_nudge_position.lua">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Scripts/Lua/Items/items_nudge_position.lua</source>
+        <source file="items_nudge_position.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/Items/items_nudge_position.lua</source>
       </version>
     </reapack>
   </category>
@@ -107,7 +107,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="midi_humanize.lua">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Scripts/Lua/MIDI/midi_humanize.lua</source>
+        <source file="midi_humanize.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/MIDI/midi_humanize.lua</source>
       </version>
     </reapack>
 
@@ -117,7 +117,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="midi_chord_generator.lua">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Scripts/Lua/MIDI/midi_chord_generator.lua</source>
+        <source file="midi_chord_generator.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/MIDI/midi_chord_generator.lua</source>
       </version>
     </reapack>
   </category>
@@ -133,7 +133,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="project_export_track_list.lua">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Scripts/Lua/Projeto/project_export_track_list.lua</source>
+        <source file="project_export_track_list.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/Projeto/project_export_track_list.lua</source>
       </version>
     </reapack>
   </category>
@@ -149,7 +149,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="ui_track_inspector.lua">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Scripts/Lua/UI/ui_track_inspector.lua</source>
+        <source file="ui_track_inspector.lua">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Lua/UI/ui_track_inspector.lua</source>
       </version>
     </reapack>
   </category>
@@ -165,7 +165,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="project_info.py">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Scripts/Python/project_info.py</source>
+        <source file="project_info.py">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Python/project_info.py</source>
       </version>
     </reapack>
 
@@ -175,7 +175,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="batch_rename_from_csv.py">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Scripts/Python/batch_rename_from_csv.py</source>
+        <source file="batch_rename_from_csv.py">https://github.com/pablito331/reapack-pablito/raw/master/Scripts/Python/batch_rename_from_csv.py</source>
       </version>
     </reapack>
   </category>
@@ -191,7 +191,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="gain_stereo.jsfx">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Effects/JSFX/Audio/gain_stereo.jsfx</source>
+        <source file="gain_stereo.jsfx">https://github.com/pablito331/reapack-pablito/raw/master/Effects/JSFX/Audio/gain_stereo.jsfx</source>
       </version>
     </reapack>
 
@@ -201,7 +201,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="compressor_simple.jsfx">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Effects/JSFX/Audio/compressor_simple.jsfx</source>
+        <source file="compressor_simple.jsfx">https://github.com/pablito331/reapack-pablito/raw/master/Effects/JSFX/Audio/compressor_simple.jsfx</source>
       </version>
     </reapack>
   </category>
@@ -217,7 +217,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="midi_transpose.jsfx">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Effects/JSFX/MIDI/midi_transpose.jsfx</source>
+        <source file="midi_transpose.jsfx">https://github.com/pablito331/reapack-pablito/raw/master/Effects/JSFX/MIDI/midi_transpose.jsfx</source>
       </version>
     </reapack>
 
@@ -227,7 +227,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="midi_velocity_map.jsfx">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Effects/JSFX/MIDI/midi_velocity_map.jsfx</source>
+        <source file="midi_velocity_map.jsfx">https://github.com/pablito331/reapack-pablito/raw/master/Effects/JSFX/MIDI/midi_velocity_map.jsfx</source>
       </version>
     </reapack>
   </category>
@@ -243,7 +243,7 @@ PLUGINS DE REFERÊNCIA:
       </metadata>
       <version name="1.0" author="MeuNome" time="2026-01-01T00:00:00Z">
         <changelog><![CDATA[Versão inicial]]></changelog>
-        <source file="peak_meter.jsfx">https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Effects/JSFX/Util/peak_meter.jsfx</source>
+        <source file="peak_meter.jsfx">https://github.com/pablito331/reapack-pablito/raw/master/Effects/JSFX/Util/peak_meter.jsfx</source>
       </version>
     </reapack>
   </category>
