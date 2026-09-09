@@ -113,3 +113,9 @@ Referências online:
 ## Licença
 
 MIT — use, modifique e distribua à vontade.
+
+## Plugins de Referência
+
+Esta coleção inclui plugins de referência para estudo. Veja `Examples/README.md` para uma descrição detalhada dos plugins Tukan e outros criadores.
+
+---
