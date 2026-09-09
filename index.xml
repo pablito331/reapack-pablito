@@ -34,6 +34,11 @@ Categorias:
 - Effects/JSFX/Audio   : Plugins de processamento de áudio
 - Effects/JSFX/MIDI    : Plugins de processamento MIDI
 - Effects/JSFX/Util    : Analisadores e utilitários
+
+PLUGINS DE REFERÊNCIA (não estão no ReaPack):
+- Examples/: Plugins do Tukan, Cockos e outros criadores para estudo
+- Drum Samplers: Loop Sampler, Granular Loop Sampler, Super8
+- Sintetizadores: December Synth, POLY 24, WTFM Synth
     ]]></description>
   </metadata>
 
@@ -257,6 +262,27 @@ Categorias:
       </version>
     </reapack>
 
+  </category>
+
+  <!-- ============================================================ -->
+  <!--  DRUM SAMPLERS (Referência - não no ReaPack)                 -->
+  <!-- ============================================================ -->
+
+  <category name="Effects/JSFX/Samplers">
+    <!-- O plugin não está aqui para não ficar no ReaPack, apenas documentado -->
+    <metadata>
+      <description><![CDATA[
+Plugins de referência para estudo (não estão disponíveis via ReaPack):
+- Drum Samplers: Loop Sampler, Granular Loop Sampler, Super8 (8 canais sincronizados)
+- Sintetizadores: December Synth, POLY 24, WTFM Synth (Tukan)
+- Filtros, Effects e Utilitários de diversos criadores
+      ]]></description>
+    </metadata>
+    <reapack name="examples" type="note" desc="Drum Samplers e Plugins de Referência">
+      <metadata>
+        <description><![CDATA[Ver Examples/README.md para lista completa de plugins de referência.]]></description>
+      </metadata>
+    </reapack>
   </category>
 
 </index>
