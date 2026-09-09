@@ -24,7 +24,7 @@ local ltn12 = require('ltn12')
 local SCRIPT_VERSION = '1.0'
 local AUTHOR = 'pablito331'
 local KITS_DIR = os.getenv('USERPROFILE') .. '\\Documents\\Reaper\\Kits\\'
-local KITS_JSON_URL = 'https://raw.githubusercontent.com/pablito331/reapack-pablito/master/Examples/drumkit_template/kits.json'
+local KITS_JSON_URL = 'https://cdn.jsdelivr.net/gh/pablito331/reapack-pablito@master/Examples/drumkit_template/kits.json'
 
 -- Mapeamento MIDI padrão
 local MIDI_MAP = {
@@ -286,6 +286,24 @@ function UI.draw_play_controls()
     end
     gfx.x = export_x; gfx.y = y
     gfx.drawstr('[ Export MIDI ]')
+
+    -- Botão de doação
+    local donate_x = 230
+    if gfx.mouse_x >= donate_x and gfx.mouse_x <= donate_x + 120 and gfx.mouse_y >= y and gfx.mouse_y <= y + 20 then
+        gfx.r, gfx.g, gfx.b = 0.9, 0.5, 0.1
+        if gfx.mouse_cap & 1 > 0 then
+            reaper.ShowMessageBox(
+                'Se gostou do pablito luadrummer, considere fazer uma doação para apoiar o projeto!\n\nBuy me a Coffee: https://buymeacoffee.com/pablocostaguimaraes\n\nAgradeço de coração! ❤️',
+                'Doação',
+                0
+            )
+            gfx.mouse_cap = 0
+        end
+    else
+        gfx.r, gfx.g, gfx.b = 0.7, 0.4, 0.2
+    end
+    gfx.x = donate_x; gfx.y = y
+    gfx.drawstr('[ Doar ]')
 end
 
 function UI.draw_sequencer()
