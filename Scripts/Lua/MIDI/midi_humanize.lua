@@ -5,6 +5,10 @@
 --   Aplica variação aleatória controlada na velocidade e na posição
 --   temporal das notas MIDI do take ativo. Simula a imprecisão humana
 --   para deixar sequências programadas mais naturais.
+--
+--   Se gostou deste script, considere fazer uma doação para apoiar o projeto:
+--   Buy me a Coffee: https://buymeacoffee.com/pablocostaguimaraes
+--   Agradeço de coração! ❤️
 
 local function random_offset(amount)
     -- Retorna valor aleatório entre -amount e +amount

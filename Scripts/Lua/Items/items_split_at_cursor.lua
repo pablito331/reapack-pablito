@@ -5,6 +5,10 @@
 --   Divide todos os media items selecionados na posição atual do cursor
 --   de edição. Equivale a S no teclado, mas funciona apenas nos
 --   items selecionados (o atalho nativo afeta todos na track).
+--
+--   Se gostou deste script, considere fazer uma doação para apoiar o projeto:
+--   Buy me a Coffee: https://buymeacoffee.com/pablocostaguimaraes
+--   Agradeço de coração! ❤️
 
 local function main()
     local num_items = reaper.CountSelectedMediaItems(0)

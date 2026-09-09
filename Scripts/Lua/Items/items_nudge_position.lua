@@ -4,6 +4,10 @@
 -- @about
 --   Desloca todos os items selecionados para frente ou para trás
 --   por um valor em milissegundos. Útil para correção de timing fino.
+--
+--   Se gostou deste script, considere fazer uma doação para apoiar o projeto:
+--   Buy me a Coffee: https://buymeacoffee.com/pablocostaguimaraes
+--   Agradeço de coração! ❤️
 
 local function main()
     local num_items = reaper.CountSelectedMediaItems(0)

@@ -5,6 +5,10 @@
 --   Para cada nota selecionada no editor MIDI, adiciona as notas do
 --   acorde escolhido acima dela. Trabalha com o take MIDI ativo.
 --   Abra o editor MIDI, selecione as notas raiz e execute o script.
+--
+--   Se gostou deste script, considere fazer uma doação para apoiar o projeto:
+--   Buy me a Coffee: https://buymeacoffee.com/pablocostaguimaraes
+--   Agradeço de coração! ❤️
 
 -- Definição dos intervalos de acorde em semitons a partir da raiz
 local CHORD_TYPES = {

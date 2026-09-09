@@ -5,6 +5,10 @@
 --   Percorre todas as tracks do projeto e aplica cores baseadas em
 --   palavras-chave no nome. Útil para padronizar templates de projeto.
 --   Edite a tabela COLOR_MAP para personalizar as cores e palavras.
+--
+--   Se gostou deste script, considere fazer uma doação para apoiar o projeto:
+--   Buy me a Coffee: https://buymeacoffee.com/pablocostaguimaraes
+--   Agradeço de coração! ❤️
 
 -- Mapa de palavras-chave -> cor (formato RGB como inteiro REAPER)
 -- Use reaper.ColorToNative(r, g, b) para converter RGB

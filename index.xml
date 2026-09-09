@@ -35,7 +35,7 @@ PLUGINS DE REFERÊNCIA:
   <category name="Scripts/Lua/Drum">
     <reapack name="pablito_luadrummer.lua" type="script" desc="Setup de bateria e sequenciador">
       <metadata>
-        <description><![CDATA[Setup automatizado de bateria com download de kits .rpk, sequenciador para criar ritmos e export MIDI. Por pablito331. Inclui UI gráfica com gfx, leitura de kits instalados, sequenciador 4/8 compassos x 16 passos.]]></description>
+        <description><![CDATA[Setup automatizado de bateria com download de kits .rpk, sequenciador para criar ritmos e export MIDI. Por pablito331. Inclui UI gráfica com gfx, leitura de kits instalados, sequenciador 4/8 compassos x 16 passos. Se gostou, apoie com um café! https://buymeacoffee.com/pablocostaguimaraes]]></description>
       </metadata>
       <version name="1.0" author="pablito331" time="2026-09-08T00:00:00Z">
         <changelog><![CDATA[Versão inicial com UI, leitura de kits, sequenciador e export MIDI]]></changelog>

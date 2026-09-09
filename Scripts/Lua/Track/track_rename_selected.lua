@@ -4,6 +4,10 @@
 -- @about
 --   Pede um nome base e numera automaticamente todas as tracks selecionadas.
 --   Ex: "Bateria" gera "Bateria 01", "Bateria 02", "Bateria 03"...
+--
+--   Se gostou deste script, considere fazer uma doação para apoiar o projeto:
+--   Buy me a Coffee: https://buymeacoffee.com/pablocostaguimaraes
+--   Agradeço de coração! ❤️
 
 local num_sel = reaper.CountSelectedTracks(0)
 
