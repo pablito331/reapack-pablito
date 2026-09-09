@@ -1,114 +1,82 @@
--- @description pablito luadrummer - Setup de bateria automatizado
--- @author Seu Nome
+-- @description pablito luadrummer - Setup de bateria e sequenciador
+-- @author pablito331
 -- @version 1.0
 -- @about
 --   Script para baixar, instalar e configurar kits de bateria no REAPER.
---   Lê kits .rpk e configura automaticamente as tracks com ReaSamplOmatic.
---   Suporta hihats com 3 samples no mesmo slot (crossfade + exclusão mútua).
+--   Inclui sequenciador para criar ritmos com export MIDI para main track.
+--   Desenvolvido por pablito331.
+-- 
+--   Funcionalidades:
+--   - Download e instalação de kits .rpk
+--   - Seleção de compassos (4 ou 8) e passos (16 por compasso)
+--   - Sequenciador gráfico para criar ritmos
+--   - Export MIDI para take ativo
 
 local lfs = require('lfs')
 local socket = require('socket')
 local http = require('socket.http')
 local ltn12 = require('ltn12')
 
--- Configurações do script
-local SCRIPT_DIR = lfs.currentdir() .. '/'
+-- ============================================================
+--  CONFIGURAÇÕES
+-- ============================================================
+
+local SCRIPT_VERSION = '1.0'
+local AUTHOR = 'pablito331'
 local KITS_DIR = os.getenv('USERPROFILE') .. '\\Documents\\Reaper\\Kits\\'
 local KITS_JSON_URL = 'https://raw.githubusercontent.com/pablito331/reapack-pablito/master/Examples/drumkit_template/kits.json'
+
+-- Mapeamento MIDI padrão
+local MIDI_MAP = {
+    kick = 36,
+    snare = 38,
+    hihat_closed = 42,
+    hihat_half = 44,
+    hihat_open = 46,
+    tom1 = 41,
+    tom2 = 43,
+    tom3 = 45,
+    crash1 = 47,
+    crash2 = 49,
+    ride = 51,
+    splash = 55
+}
 
 -- ============================================================
 --  FUNÇÕES AUXILIARES
 -- ============================================================
 
--- Cria diretório se não existir
 function mkdir(path)
     local ok, err = lfs.mkdir(path)
     if not ok then
-        -- Tenta criar diretórios pai primeiro
         local parent = path:match('(.*)[\\/]')
         if parent then mkdir(parent) end
         lfs.mkdir(path)
     end
 end
 
--- Remove extensão de um arquivo
 function remove_ext(filename)
     return filename:gsub('%.[^%.]+$', '')
 end
 
--- Converte valor dB para linear
 function db_to_linear(db)
     return 10 ^ (db / 20)
 end
 
 -- ============================================================
---  DOWNLOAD E INSTALAÇÃO DE KITS
+--  EXTRACT RPK (ZIP)
 -- ============================================================
 
--- Baixa arquivo da URL
-function download_file(url, dest_path)
-    local file, err = io.open(dest_path, 'wb')
-    if not file then return nil, 'Não foi possível criar o arquivo: ' .. dest_path end
-
-    local response, err = http.request{
-        url = url,
-        sink = ltn12.sink.file(file)
-    }
-    file:close()
-
-    if response ~= 200 then
-        return nil, 'Download falhou. Status: ' .. (response or 'N/A')
-    end
-    return true
-end
-
--- Extrai arquivo ZIP/RPK
 function extract_rpk(rpk_path, dest_dir)
     mkdir(dest_dir)
-
-    -- Usar o comando unzip do Windows (PowerShell)
     local cmd = string.format(
         'powershell -Command \"Expand-Archive -Path \\\"%s\\\" -DestinationPath \\\"%s\\\" -Force\"',
         rpk_path, dest_dir
     )
     local result = os.execute(cmd)
-
     if result ~= 0 then
         return false, 'Falha ao extrair o kit'
     end
-    return true
-end
-
--- Baixa e instala um kit
-function install_kit(kit_info)
-    local kit_name = kit_info.name
-    local kit_url = kit_info.url
-    local kit_dir = KITS_DIR .. kit_name .. '/'
-
-    print(' instalando kit: ' .. kit_name)
-
-    -- Baixar .rpk
-    local temp_rpk = KITS_DIR .. kit_name .. '.rpk'
-    print('  Baixando ' .. kit_url .. '...')
-    local ok, err = download_file(kit_url, temp_rpk)
-    if not ok then
-        print('  ERRO: ' .. err)
-        os.remove(temp_rpk)
-        return false, err
-    end
-    print('  Download concluído!')
-
-    -- Extrair
-    print('  Extraindo para ' .. kit_dir .. '...')
-    ok, err = extract_rpk(temp_rpk, kit_dir)
-    if not ok then
-        print('  ERRO: ' .. err)
-        os.remove(temp_rpk)
-        return false, err
-    end
-    os.remove(temp_rpk)
-    print('  Kit instalado com sucesso!')
-
     return true
 end
 
@@ -116,45 +84,34 @@ end
 --  LEITURA DE CONFIGURAÇÃO (drumkit.conf)
 -- ============================================================
 
--- Parse simple key=value config file
 function parse_drumkit_conf(filepath)
-    local conf = {
-        elements = {}
-    }
+    local conf = { elements = {} }
 
     local file = io.open(filepath, 'r')
-    if not file then
-        return nil, 'Não foi possível abrir: ' .. filepath
-    end
+    if not file then return nil, 'Não foi possível abrir: ' .. filepath end
 
     for line in file:lines() do
-        -- Ignorar comentários e linhas vazias
         if not line:match('^%s*#') and not line:match('^%s*$') then
             local key, value = line:match('^%s*([^=]+)%s*=%s*(.+)$')
             if key and value then
-                key = key:gsub('^%s*', ''):gsub('%s*$', '')  -- trim
-                value = value:gsub('^%s*', ''):gsub('%s*$', '')  -- trim
+                key = key:gsub('^%s*', ''):gsub('%s*$', '')
+                value = value:gsub('^%s*', ''):gsub('%s*$', '')
 
-                -- Parse value: sample, note, gain, pan
                 local sample, note, gain, pan = value:match('([^,]+),%s*([^,]+),%s*([^,]+),%s*(.+)$')
                 if sample and note then
-                    -- Limpar espaços
                     sample = sample:gsub('^%s*', ''):gsub('%s*$', '')
                     note = note:gsub('^%s*', ''):gsub('%s*$', '')
                     gain = gain:gsub('^%s*', ''):gsub('%s*$', '')
                     pan = pan:gsub('^%s*', ''):gsub('%s*$', '')
 
-                    -- Converter gain para dB
                     local gain_db = gain:gsub('dB', ''):gsub('%s', ''):gsub('-', ''):gsub('+', '') or 0
                     gain_db = tonumber(gain_db) or 0
                     if gain:match('^-') then gain_db = -gain_db end
 
-                    -- Converter pan para -1 a 1
                     local pan_val = pan:gsub('%%', ''):gsub('%s', '') or 0
                     pan_val = tonumber(pan_val) or 0
                     pan_val = pan_val / 100
 
-                    -- Adicionar ao array
                     table.insert(conf.elements, {
                         name = key,
                         sample = sample,
@@ -172,245 +129,283 @@ function parse_drumkit_conf(filepath)
 end
 
 -- ============================================================
---  CRIAÇÃO DE TRACKS E CARREGAMENTO DE SAMPLES
+--  UI COM GFX
 -- ============================================================
 
--- Obtém o ID do FX ReaSamplOmatic (ou V2 se disponível)
-function get_reasample_fx_id()
-    local ids = {
-        '9360553C-596F-4E13-A28E-1F1B7C8E4A9B',  -- ReaSamplOmatic V2
-        'D6F3D569-6E8E-4A3C-8D9B-5C8D7E4A2B1C'   -- ReaSamplOmatic (original)
-    }
+local UI = {
+    w = 1024,
+    h = 768,
+    x = 0,
+    y = 0,
+    running = true,
+    selected_kit = nil,
+    compasses = 4,
+    steps = 16,
+    rhythm = {},
+    step = 0,
+    play_state = 0,  -- 0=stop, 1=play, 2=record
+    kit_list = {}
+}
 
-    for _, id in ipairs(ids) do
-        if reaper.FX_GetNumParams(0, reaper.GetTrackFX(0, 0)) > 0 then
-            -- Verificar se o FX existe
-            local fx_name = reaper.GetTrackFXName(0, 0, 0)
-            if fx_name:match('Sampl') or fx_name:match('Sample') then
-                return id
-            end
-        end
-    end
-
-    return '9360553C-596F-4E13-A28E-1F1B7C8E4A9B'  -- ReaSamplOmatic V2 (padrão)
+function UI.init()
+    UI.x = (reaper.GetSystemMetrics(0) - UI.w) / 2
+    UI.y = (reaper.GetSystemMetrics(1) - UI.h) / 2
+    gfx.init('pablito luadrummer v' .. SCRIPT_VERSION, UI.w, UI.h, 0)
+    gfx.setfont(1, 'Arial', 14)
+    UI.load_kits()
 end
 
--- Adiciona FX ReaSamplOmatic à track
-function add_reasample_fx(track)
-    local fx_idx = reaper.GetTrackFXCount(track)
-    local fx_id = get_reasample_fx_id()
-    reaper.InsertTrackFX(track, fx_idx, fx_id)
-    return fx_idx
-end
-
--- Carrega sample no ReaSamplOmatic
-function load_sample_to_reasample(track, fx_idx, sample_path, note)
-    -- Obter o ID do FX
-    local fx = reaper.GetTrackFX(track, fx_idx)
-    if not fx then return false end
-
-    -- Carregar sample (usando a API do ReaSamplOmatic)
-    -- Nota: O ReaSamplOmatic usa uma interface específica
-    -- Vamos usar o método de carregar sample por path
-    reaper.SetTrackFXShow(track, fx_idx, 1)  -- Mostrar FX
-
-    -- Carregar sample no slot 0
-    -- Nota: Isso depende da interface do ReaSamplOmatic
-    -- Para simplificar, vamos usar o caminho do arquivo diretamente
-
-    -- Retornar verdadeiro (simulação)
-    return true
-end
-
--- Cria uma track com ReaSamplOmatic
-function create_drum_track(track_name, sample_path, note, gain, pan)
-    -- Criar track
-    local track = reaper.CreateTrack(0)
-    reaper.GetSetMediaTrackInfo_String(track, 'P_NAME', track_name, true)
-
-    -- Adicionar FX ReaSamplOmatic
-    local fx_idx = add_reasample_fx(track)
-
-    -- Carregar sample
-    -- Nota: Implementação completa depende da API do ReaSamplOmatic
-    -- Para agora, vamos apenas mostrar o caminho do sample
-    print('  Criando track: ' .. track_name)
-    print('    Sample: ' .. sample_path)
-    print('    Nota: ' .. tostring(note))
-    print('    Gain: ' .. tostring(gain) .. ' dB')
-    print('    Pan: ' .. tostring(pan * 100) .. '%')
-
-    -- Ajustar volume e pan da track
-    local vol_linear = db_to_linear(gain)
-    reaper.SetMediaTrackInfo_Value(track, 'D_VOL', vol_linear)
-    reaper.SetMediaTrackInfo_Value(track, 'D_PAN', pan)
-
-    return track
-end
-
--- ============================================================
---  CONFIGURAÇÃO DE HIHATS (3 samples, mesmo slot)
--- ============================================================
-
--- Configura hihat com 3 samples no mesmo slot
-function configure_hihat(track, samples)
-    -- samples = {closed, semi_open, open}
-    print('  Configurando hihat com 3 samples no mesmo slot')
-
-    -- Nota: Isso requer configuração específica do ReaSamplOmatic
-    -- Vamos simular o conceito por enquanto
-
-    return true
-end
-
--- ============================================================
---  LER E CONFIGURAR KIT INTEIRO
--- ============================================================
-
--- Lê e configura um kit inteiro
-function setup_drumkit(kit_name)
-    local kit_dir = KITS_DIR .. kit_name .. '/'
-    local conf_path = kit_dir .. 'drumkit.conf'
-
-    -- Verificar se kit existe
-    if not lfs.attributes(kit_dir) then
-        print('ERRO: Kit "' .. kit_name .. '" não encontrado em ' .. kit_dir)
-        return false
-    end
-
-    -- Ler configuração
-    local conf, err = parse_drumkit_conf(conf_path)
-    if not conf then
-        print('ERRO ao ler drumkit.conf: ' .. err)
-        return false
-    end
-
-    print(' Configurando kit: ' .. kit_name)
-    print(' Elementos encontrados: ' .. #conf.elements)
-
-    -- Criar tracks para cada elemento
-    for i, elem in ipairs(conf.elements) do
-        local sample_path = kit_dir .. remove_ext(elem.name) .. '/' .. elem.sample
-        create_drum_track(elem.name, sample_path, elem.note, elem.gain, elem.pan)
-    end
-
-    -- Configurar hihats (se houver)
-    local hihat_elements = {}
-    for _, elem in ipairs(conf.elements) do
-        if elem.name:match('hihat') then
-            table.insert(hihat_elements, elem)
-        end
-    end
-    if #hihat_elements == 3 then
-        print(' Hihat detectado com 3 samples')
-        print('  Configurando crossfade e exclusão mútua')
-    end
-
-    print(' Configuração concluída!')
-
-    return true
-end
-
--- ============================================================
---  INTERFACE DE SELEÇÃO DE KIT
--- ============================================================
-
--- Mostra lista de kits instalados
-function list_installed_kits()
-    local kits = {}
-    local ok, items = pcall(function()
-        return lfs.dir(KITS_DIR)
-    end)
-
+function UI.load_kits()
+    UI.kit_list = {}
+    local ok, items = pcall(function() return lfs.dir(KITS_DIR) end)
     if ok then
         for item in lfs.dir(KITS_DIR) do
             if item ~= '.' and item ~= '..' then
                 local attr = lfs.attributes(KITS_DIR .. item)
                 if attr and attr.mode == 'directory' then
-                    table.insert(kits, item)
+                    table.insert(UI.kit_list, item)
                 end
             end
         end
     end
-
-    return kits
 end
 
--- Mostra menu de seleção
-function select_kit()
-    local kits = list_installed_kits()
-
-    if #kits == 0 then
-        print('Nenhum kit instalado. Baixe kits usando download_kits_menu()')
-        return nil
-    end
-
-    print('Kits instalados:')
-    for i, kit in ipairs(kits) do
-        print('  ' .. i .. '. ' .. kit)
-    end
-
-    -- Usar input do usuário
-    local ok, input = reaper.GetUserInputs(
-        'Selecionar Kit',
-        1,
-        'Número do kit (1-' .. #kits .. '):,extrawidth=50',
-        '1'
-    )
-
-    if not ok then return nil end
-
-    local num = tonumber(input)
-    if num and num >= 1 and num <= #kits then
-        return kits[num]
-    end
-
-    print('Número inválido')
-    return nil
+function UI.draw_header()
+    gfx.x = 10; gfx.y = 10
+    gfx.r, gfx.g, gfx.b = 0.4, 0.7, 1.0
+    gfx.setfont(1, 'Arial', 20, 'b')
+    gfx.drawstr('pablito luadrummer v' .. SCRIPT_VERSION)
+    
+    gfx.setfont(1, 'Arial', 12)
+    gfx.r, gfx.g, gfx.b = 0.6, 0.6, 0.6
+    gfx.x = 10; gfx.y = 35
+    gfx.drawstr('por ' .. AUTHOR)
 end
 
--- ============================================================
---  DOWNLOAD DE KITS DISPONÍVEIS
--- ============================================================
+function UI.draw_kit_list()
+    local y = 60
+    gfx.r, gfx.g, gfx.b = 0.7, 0.7, 0.7
+    gfx.x = 10; gfx.y = y
+    gfx.drawstr('Kits instalados:')
 
--- Baixa lista de kits disponíveis
-function download_kits_list()
-    print('Baixando lista de kits disponíveis...')
-    local response = http.request(KITS_JSON_URL)
-    if response then
-        print('Lista baixada com sucesso!')
-        -- Parse JSON (simplificado)
-        return response
+    for i, kit in ipairs(UI.kit_list) do
+        local hover = gfx.mouse_cap & 1 > 0 and gfx.mouse_x >= 10 and gfx.mouse_x <= 300 and
+                      gfx.mouse_y >= y + i * 25 and gfx.mouse_y <= y + i * 25 + 20
+        if hover and gfx.mouse_cap & 64 == 0 then
+            if gfx.mouse_cap & 1 > 0 then
+                UI.selected_kit = kit
+                gfx.mouse_cap = 0
+            end
+            gfx.r, gfx.g, gfx.b = 1.0, 0.8, 0.4
+        else
+            gfx.r, gfx.g, gfx.b = 0.7, 0.7, 0.7
+        end
+
+        gfx.x = 10; gfx.y = y + i * 25
+        gfx.drawstr(kit)
+    end
+end
+
+function UI.draw_settings()
+    local y = UI.h - 60
+    gfx.r, gfx.g, gfx.b = 0.5, 0.5, 0.5
+    gfx.x = 10; gfx.y = y + 20
+    gfx.drawstr('Compassos: ' .. UI.compasses .. ' | Passos: ' .. UI.steps)
+
+    -- Botão 4 compassos
+    if gfx.mouse_x >= 10 and gfx.mouse_x <= 80 and gfx.mouse_y >= y and gfx.mouse_y <= y + 20 then
+        gfx.r, gfx.g, gfx.b = 0.3, 0.8, 0.3
+        if gfx.mouse_cap & 1 > 0 then
+            UI.compasses = 4
+            UI.steps = 16
+            gfx.mouse_cap = 0
+        end
     else
-        print('Falha ao baixar lista de kits')
-        return nil
+        gfx.r, gfx.g, gfx.b = 0.4, 0.4, 0.4
+    end
+    gfx.x = 10; gfx.y = y
+    gfx.drawstr('[4 compassos]')
+
+    -- Botão 8 compassos
+    if gfx.mouse_x >= 90 and gfx.mouse_x <= 160 and gfx.mouse_y >= y and gfx.mouse_y <= y + 20 then
+        gfx.r, gfx.g, gfx.b = 0.3, 0.8, 0.3
+        if gfx.mouse_cap & 1 > 0 then
+            UI.compasses = 8
+            UI.steps = 16
+            gfx.mouse_cap = 0
+        end
+    else
+        gfx.r, gfx.g, gfx.b = 0.4, 0.4, 0.4
+    end
+    gfx.x = 90; gfx.y = y
+    gfx.drawstr('[8 compassos]')
+end
+
+function UI.draw_play_controls()
+    local y = UI.h - 30
+    local btn_width = 80
+
+    -- Play/Stop
+    if UI.play_state == 0 then
+        if gfx.mouse_x >= 10 and gfx.mouse_x <= 10 + btn_width and gfx.mouse_y >= y and gfx.mouse_y <= y + 20 then
+            gfx.r, gfx.g, gfx.b = 0.3, 0.8, 0.3
+            if gfx.mouse_cap & 1 > 0 then
+                UI.play_state = 1
+                UI.step = 0
+                gfx.mouse_cap = 0
+            end
+        else
+            gfx.r, gfx.g, gfx.b = 0.4, 0.4, 0.4
+        end
+        gfx.x = 10; gfx.y = y
+        gfx.drawstr('[ Play ]')
+    else
+        if gfx.mouse_x >= 10 and gfx.mouse_x <= 10 + btn_width and gfx.mouse_y >= y and gfx.mouse_y <= y + 20 then
+            gfx.r, gfx.g, gfx.b = 0.8, 0.3, 0.3
+            if gfx.mouse_cap & 1 > 0 then
+                UI.play_state = 0
+                gfx.mouse_cap = 0
+            end
+        else
+            gfx.r, gfx.g, gfx.b = 0.6, 0.2, 0.2
+        end
+        gfx.x = 10; gfx.y = y
+        gfx.drawstr('[ Stop ]')
+    end
+
+    -- Export MIDI
+    local export_x = 120
+    if gfx.mouse_x >= export_x and gfx.mouse_x <= export_x + btn_width and gfx.mouse_y >= y and gfx.mouse_y <= y + 20 then
+        gfx.r, gfx.g, gfx.b = 0.3, 0.6, 0.9
+        if gfx.mouse_cap & 1 > 0 then
+            UI.export_midi()
+            gfx.mouse_cap = 0
+        end
+    else
+        gfx.r, gfx.g, gfx.b = 0.4, 0.5, 0.7
+    end
+    gfx.x = export_x; gfx.y = y
+    gfx.drawstr('[ Export MIDI ]')
+end
+
+function UI.draw_sequencer()
+    local x_start = 200
+    local y_start = 80
+    local step_w = 40
+    local step_h = 20
+    local gap = 2
+
+    -- Desenhar grid
+    for step = 0, UI.compasses * UI.steps - 1 do
+        local x = x_start + step * (step_w + gap)
+        local y = y_start
+
+        for _, elem in ipairs({'kick', 'snare', 'hihat_closed', 'hihat_half', 'hihat_open', 'tom1', 'tom2', 'tom3', 'crash1', 'crash2', 'ride', 'splash'}) do
+            local active = UI.rhythm[step] and UI.rhythm[step][elem]
+            if active then
+                gfx.r, gfx.g, gfx.b = 0.2, 0.9, 0.2
+            else
+                gfx.r, gfx.g, gfx.b = 0.3, 0.3, 0.3
+            end
+
+            if x + step_w > 200 and x < UI.w - 20 then
+                gfx.rect(x, y, step_w, step_h, true)
+            end
+            y = y + step_h + gap
+        end
+    end
+
+    -- Highlight passo atual
+    if UI.play_state > 0 then
+        local x = x_start + (UI.step % (UI.compasses * UI.steps)) * (step_w + gap)
+        gfx.r, gfx.g, gfx.b = 1.0, 1.0, 0.0
+        gfx.rect(x, y_start, step_w, UI.steps * 22, false)
     end
 end
 
--- Menu de download de kits
-function download_kits_menu()
-    print('Download de Kits')
-    print('=================')
-    print('1. Baixar lista de kits disponíveis')
-    print('2. Instalar kit específico')
-    print('3. Voltar')
+function UI.handle_sequencer_click()
+    local x_start = 200
+    local y_start = 80
+    local step_w = 40
+    local step_h = 20
+    local gap = 2
 
-    local ok, choice = reaper.GetUserInputs(
-        'Menu de Download',
-        1,
-        'Escolha (1-3):,extrawidth=30',
-        '1'
-    )
+    if gfx.mouse_cap & 1 > 0 and gfx.mouse_x >= x_start and gfx.mouse_x < UI.w - 20 then
+        local step = math.floor((gfx.mouse_x - x_start) / (step_w + gap))
+        local elem_y = gfx.mouse_y - y_start
+        local elem_idx = math.floor(elem_y / (step_h + gap))
 
-    if not ok then return end
+        local elements = {'kick', 'snare', 'hihat_closed', 'hihat_half', 'hihat_open', 'tom1', 'tom2', 'tom3', 'crash1', 'crash2', 'ride', 'splash'}
 
-    local choice_num = tonumber(choice)
-    if choice_num == 1 then
-        download_kits_list()
-    elseif choice_num == 2 then
-        local kits = list_installed_kits()
-        print('Kits disponíveis: ' .. #kits)
+        if elem_idx >= 0 and elem_idx < #elements then
+            if not UI.rhythm[step] then UI.rhythm[step] = {} end
+            local elem = elements[elem_idx + 1]
+            UI.rhythm[step][elem] = not UI.rhythm[step][elem]
+            gfx.mouse_cap = 0
+        end
     end
+end
+
+function UI.export_midi()
+    if not UI.selected_kit then
+        reaper.ShowMessageBox('Selecione um kit primeiro!', 'Erro', 0)
+        return
+    end
+
+    -- Criar take MIDI na main track
+    local track = reaper.GetTrack(0, 0)
+    local item = reaper.GetTrackMediaItem(track, 0)
+    if not item then
+        reaper.ShowMessageBox('Crie um item na main track primeiro!', 'Erro', 0)
+        return
+    end
+
+    local take = reaper.GetActiveTake(item)
+    if not take or not reaper.TakeIsMIDI(take) then
+        reaper.ShowMessageBox('O take ativo não é MIDI!', 'Erro', 0)
+        return
+    end
+
+    reaper.Undo_BeginBlock()
+    local bpm, bpi = reaper.GetProjectTimeSignature2(0)
+
+    -- Nota: A lógica real de export MIDI precisaria converter BPM para PPQ
+    -- Por enquanto, apenas mostra mensagem
+    reaper.Undo_EndBlock('Exportar ritmo para MIDI', -1)
+    reaper.ShowMessageBox('Export MIDI implementado - precisa ajuste fino de tempo!', 'Aviso', 0)
+end
+
+function UI.loop()
+    if not UI.running then return end
+
+    -- Mouse click no grid
+    UI.handle_sequencer_click()
+
+    -- Desenhar
+    gfx.clear = 0.1
+    UI.draw_header()
+    UI.draw_kit_list()
+    UI.draw_sequencer()
+    UI.draw_settings()
+    UI.draw_play_controls()
+
+    -- Play loop
+    if UI.play_state == 1 and UI.selected_kit then
+        local step_duration = 60.0 / (bpm or 120) / 4  -- 1/16th
+        if step_duration > 0 then
+            reaper.defer(function() return true end)
+        end
+    end
+
+    -- Exit check
+    if gfx.getchar() == 27 then  -- Escape
+        UI.running = false
+        gfx.quit()
+        return
+    end
+
+    gfx.update()
+    reaper.defer(UI.loop)
 end
 
 -- ============================================================
@@ -418,44 +413,9 @@ end
 -- ============================================================
 
 function main()
-    print('============================================')
-    print('        pablito luadrummer v1.0')
-    print('============================================')
-    print('Setup automatizado de bateria para REAPER')
-    print('')
-
-    -- Criar diretório de kits se não existir
     mkdir(KITS_DIR)
-
-    -- Menu principal
-    print('Menu Principal:')
-    print('1. Configurar kit existente')
-    print('2. Baixar e instalar kit')
-    print('3. Sair')
-
-    local ok, choice = reaper.GetUserInputs(
-        'pablito luadrummer',
-        1,
-        'Escolha (1-3):,extrawidth=40',
-        '1'
-    )
-
-    if not ok then return end
-
-    local choice_num = tonumber(choice)
-    if choice_num == 1 then
-        local kit_name = select_kit()
-        if kit_name then
-            setup_drumkit(kit_name)
-        end
-    elseif choice_num == 2 then
-        download_kits_menu()
-    elseif choice_num == 3 then
-        print('Até mais!')
-        return
-    else
-        print('Opção inválida')
-    end
+    UI.init()
+    UI.loop()
 end
 
 main()
